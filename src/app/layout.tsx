@@ -1,6 +1,13 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import Script from "next/script";
+import { Geist, Geist_Mono, Amarante } from "next/font/google";
 import "./globals.css";
+
+const amarante = Amarante({ 
+  weight: '400', 
+  subsets: ['latin'],
+  variable: '--font-amarante' 
+});
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,8 +32,17 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${amarante.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+        {/* Load AdSense Script Globally */}
+        <Script
+          id="adsbygoogle-init"
+          async
+          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}`}
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
+        
         {children}
       </body>
     </html>
