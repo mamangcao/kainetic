@@ -1,8 +1,16 @@
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   const clientId = process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID;
-  const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:3000";
+  
+  // Try to get from env first, then fall back to dynamic detection
+  let baseUrl = process.env.NEXT_PUBLIC_BASE_URL;
+  
+  if (!baseUrl) {
+    const url = new URL(request.url);
+    baseUrl = `${url.protocol}//${url.host}`;
+  }
+  
   const redirectUri = `${baseUrl}/auth/callback`;
 
   if (!clientId) {
