@@ -1,10 +1,10 @@
 "use client";
 
-import { useEffect, useRef, Suspense } from "react";
+import { useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { exchangeCodeForToken } from "@/lib/stravaApi";
 
-function AuthCallbackContent() {
+export default function AuthCallbackClient() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const code = searchParams.get("code");
@@ -13,11 +13,14 @@ function AuthCallbackContent() {
 
   useEffect(() => {
     if (error) {
+      // Intent: Redirect to home on auth error to prevent stuck state
       console.error("Strava Auth Error:", error);
       router.push("/");
       return;
     }
 
+    // Constraint: Strict Mode in React 18 fires effects twice in dev.
+    // Use ref to ensure token exchange happens exactly once.
     if (code && !hasCalledExchange.current) {
       hasCalledExchange.current = true;
       exchangeCodeForToken(code)
@@ -40,17 +43,5 @@ function AuthCallbackContent() {
         Connecting to Strava...
       </p>
     </div>
-  );
-}
-
-export default function AuthCallback() {
-  return (
-    <Suspense fallback={
-      <div className="h-screen w-screen flex flex-col items-center justify-center bg-[#101418] text-white">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[#fc4c02] mb-4"></div>
-      </div>
-    }>
-      <AuthCallbackContent />
-    </Suspense>
   );
 }
