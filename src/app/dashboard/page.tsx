@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -29,7 +29,7 @@ import * as stravaService from "@/lib/stravaService";
 
 import { SportType, StatsData, AthleteProfile } from "@/types";
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isDemo = searchParams.get("mode") === "demo";
@@ -48,7 +48,6 @@ export default function DashboardPage() {
   ];
 
   useEffect(() => {
-    // Both services must implement `getStats`
     service.getStats(activeTab).then(setStats);
   }, [activeTab, service]);
 
@@ -58,7 +57,6 @@ export default function DashboardPage() {
 
   const handleLogout = () => {
     if (!isDemo) {
-      // Perform actual logout logic
       document.cookie = "strava_access_token=; Max-Age=0; path=/;";
     }
     router.push("/");
@@ -296,5 +294,22 @@ export default function DashboardPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="min-h-screen bg-[#101418] flex items-center justify-center">
+          <div className="text-slate-400 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-lime-400 mx-auto mb-4"></div>
+            <p>Loading dashboard...</p>
+          </div>
+        </div>
+      }
+    >
+      <DashboardContent />
+    </Suspense>
   );
 }
