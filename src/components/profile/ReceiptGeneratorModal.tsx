@@ -170,8 +170,11 @@ const ReceiptGeneratorModal: React.FC<ReceiptGeneratorModalProps> = ({ isOpen, o
     window.print();
 
     // 7. Cleanup
-    document.body.removeChild(clone);
-    document.head.removeChild(style);
+    // Delay cleanup to ensure print dialog renders on mobile
+    setTimeout(() => {
+      document.body.removeChild(clone);
+      document.head.removeChild(style);
+    }, 1000);
   };
 
   const handleShare = async () => {
@@ -485,7 +488,7 @@ const ReceiptGeneratorModal: React.FC<ReceiptGeneratorModalProps> = ({ isOpen, o
             </div>
           </div>
 
-          <div className={`${showPreview ? 'fixed' : 'hidden'} lg:relative lg:flex inset-0 z-[220] lg:z-auto w-full lg:w-1/2 bg-[#0d1014] flex flex-col`}>
+          <div className={`${showPreview ? 'fixed inset-0 z-[220]' : 'fixed left-[-9999px] top-0 w-full h-full z-[-1] opacity-0 pointer-events-none'} lg:relative lg:flex lg:inset-auto lg:z-auto lg:opacity-100 lg:pointer-events-auto w-full lg:w-1/2 bg-[#0d1014] flex flex-col`}>
             <button 
               onClick={() => setShowPreview(false)}
               className="lg:hidden absolute top-4 right-4 z-10 p-2 bg-black/80 backdrop-blur-sm rounded-full text-white hover:bg-black transition-colors shadow-lg border border-white/20"
