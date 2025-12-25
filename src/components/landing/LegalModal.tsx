@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
-import { Button } from '@/components/ui/ui-primitives'; // Adjust path if needed
+import { Button } from '@/components/ui/ui-primitives';
 
 interface LegalModalProps {
   isOpen: boolean;

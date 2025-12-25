@@ -1,8 +1,6 @@
-import React from 'react';
-
 export const PRIVACY_POLICY = (
   <div className="space-y-4 text-slate-600 text-sm leading-relaxed">
-    <p><strong>Last Updated:</strong> {new Date().toLocaleDateString()}</p>
+    <p><strong>Last Updated:</strong> December 25, 2025</p>
 
     <h4 className="text-slate-900 font-bold text-base mt-4">1. Introduction</h4>
     <p>
@@ -57,14 +55,14 @@ export const PRIVACY_POLICY = (
     <p>
       If you have any questions about this Privacy Policy, please contact us at:
       <br />
-      <strong>[your email here]</strong>
+      <strong>abdulhaleem.mamangcao@gmail.com</strong>
     </p>
   </div>
 );
 
 export const TERMS_OF_SERVICE = (
   <div className="space-y-4 text-slate-600 text-sm leading-relaxed">
-    <p><strong>Effective Date:</strong> {new Date().toLocaleDateString()}</p>
+    <p><strong>Effective Date:</strong> December 25, 2025</p>
 
     <h4 className="text-slate-900 font-bold text-base mt-4">1. Acceptance of Terms</h4>
     <p>
@@ -107,7 +105,7 @@ export const TERMS_OF_SERVICE = (
     <p>
       For questions about these Terms of Service, please contact us at:
       <br />
-      <strong>[your email here]</strong>
+      <strong>abdulhaleem.mamangcao@gmail.com</strong>
     </p>
   </div>
 );

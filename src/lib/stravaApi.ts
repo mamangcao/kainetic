@@ -1,10 +1,9 @@
 
-// Strava API Configuration
-// Replace these with your actual credentials from https://www.strava.com/settings/api
+// Centralizes configuration and relies on environment variables to ensure
+// sensitive credentials are not exposed in the client bundle.
 const STRAVA_CONFIG = {
-  clientId: 'YOUR_STRAVA_CLIENT_ID',
-  clientSecret: 'YOUR_STRAVA_CLIENT_SECRET',
-  redirectUri: window.location.origin,
+  clientId: process.env.NEXT_PUBLIC_STRAVA_CLIENT_ID || '',
+  redirectUri: typeof window !== 'undefined' ? `${window.location.origin}/auth/callback` : '',
 };
 
 const BASE_URL = 'https://www.strava.com/api/v3';
@@ -21,15 +20,12 @@ export const getAuthUrl = () => {
 };
 
 export const exchangeCodeForToken = async (code: string) => {
-  const response = await fetch('https://www.strava.com/oauth/token', {
+  // Proxies the token exchange through an internal API route to prevent exposing
+  // the Client Secret to the browser, adhering to OAuth 2.0 security best practices.
+  const response = await fetch('/api/strava/exchange', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      client_id: STRAVA_CONFIG.clientId,
-      client_secret: STRAVA_CONFIG.clientSecret,
-      code,
-      grant_type: 'authorization_code',
-    }),
+    body: JSON.stringify({ code }),
   });
 
   if (!response.ok) throw new Error('Failed to exchange code for token');
@@ -39,7 +35,14 @@ export const exchangeCodeForToken = async (code: string) => {
   return data;
 };
 
-const saveTokens = (data: any) => {
+interface StravaTokenResponse {
+  access_token: string;
+  refresh_token: string;
+  expires_at: number;
+  athlete: unknown;
+}
+
+const saveTokens = (data: StravaTokenResponse) => {
   localStorage.setItem('strava_access_token', data.access_token);
   localStorage.setItem('strava_refresh_token', data.refresh_token);
   localStorage.setItem('strava_expires_at', data.expires_at.toString());
@@ -50,7 +53,7 @@ export const getAccessToken = async () => {
   const expiresAt = parseInt(localStorage.getItem('strava_expires_at') || '0');
   const now = Math.floor(Date.now() / 1000);
 
-  if (now > expiresAt - 600) { // Refresh if expiring in less than 10 mins
+  if (now > expiresAt - 600) { // Proactively refresh 10 minutes before expiration to prevent mid-request failures.
     return await refreshAccessToken();
   }
 
@@ -61,14 +64,11 @@ const refreshAccessToken = async () => {
   const refreshToken = localStorage.getItem('strava_refresh_token');
   if (!refreshToken) return null;
 
-  const response = await fetch('https://www.strava.com/oauth/token', {
+  const response = await fetch('/api/strava/refresh', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
-      client_id: STRAVA_CONFIG.clientId,
-      client_secret: STRAVA_CONFIG.clientSecret,
       refresh_token: refreshToken,
-      grant_type: 'refresh_token',
     }),
   });
 

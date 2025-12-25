@@ -3,8 +3,6 @@
 import { motion } from 'framer-motion';
 import { TrendingUp, Mountain, Timer, Zap } from 'lucide-react';
 
-// --- Sub-components for the widgets ---
-
 export const FloatingWrapper = ({ children, delay = 0, duration = 6, yOffset = 15, className }: {
   children: React.ReactNode;
   delay?: number;

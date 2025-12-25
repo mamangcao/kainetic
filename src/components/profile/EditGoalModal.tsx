@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 
@@ -19,10 +19,16 @@ const EditGoalModal: React.FC<EditGoalModalProps> = ({
   currentValue 
 }) => {
   const [value, setValue] = useState(currentValue.toString());
+  const [prevIsOpen, setPrevIsOpen] = useState(isOpen);
+  const [prevCurrentValue, setPrevCurrentValue] = useState(currentValue);
 
-  useEffect(() => {
-    if (isOpen) setValue(currentValue.toString());
-  }, [currentValue, isOpen]);
+  if (isOpen !== prevIsOpen || (isOpen && currentValue !== prevCurrentValue)) {
+     setPrevIsOpen(isOpen);
+     setPrevCurrentValue(currentValue);
+     if (isOpen) {
+         setValue(currentValue.toString());
+     }
+  }
 
   return (
     <AnimatePresence>

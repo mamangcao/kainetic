@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
@@ -21,26 +21,25 @@ import Heatmap from "@/components/profile/Heatmap";
 import StatsGrid from "@/components/profile/StatsGrid";
 import ChartsSection from "@/components/profile/ChartsSection";
 import WeeklyStory from "@/components/profile/WeeklyStory";
-import TrophiesGrid from "@/components/profile/TrophiesGrid";
 import UserProfile from "@/components/profile/UserProfile";
 
 // Services
 import * as demoService from "@/lib/demoService";
 import * as stravaService from "@/lib/stravaService";
 
-import { SportType, StatsData } from "@/types";
+import { SportType, StatsData, AthleteProfile } from "@/types";
 
 export default function DashboardPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isDemo = searchParams.get("mode") === "demo";
 
-  // --- STRATEGY PATTERN ---
   // Select the service based on mode
   const service = isDemo ? demoService : stravaService;
 
   const [activeTab, setActiveTab] = useState<SportType>("running");
   const [stats, setStats] = useState<StatsData | null>(null);
+  const [profile, setProfile] = useState<AthleteProfile | null>(null);
 
   const tabs: { id: SportType; label: string }[] = [
     { id: "running", label: "Running" },
@@ -52,6 +51,10 @@ export default function DashboardPage() {
     // Both services must implement `getStats`
     service.getStats(activeTab).then(setStats);
   }, [activeTab, service]);
+
+  useEffect(() => {
+    service.getAthleteProfile().then(setProfile);
+  }, [service]);
 
   const handleLogout = () => {
     if (!isDemo) {
@@ -65,10 +68,16 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#101418] text-slate-50 pb-20 relative font-sans selection:bg-lime-400/30">
       {/* --- HEADER --- */}
       <header className="sticky top-0 z-50 bg-[#101418]/80 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div className="max-w-4xl mx-auto px-4 py-2 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-600 to-lime-500 rounded-lg flex items-center justify-center text-[#101418] font-black shadow-[0_0_15px_rgba(59,130,246,0.5)] transform -skew-x-12 font-amarante">
-              <span className="skew-x-12">K</span>
+            <div className="w-12 h-12 flex items-center justify-center -skew-x-12">
+              <Image
+                src="/logo/kainetic-logo-v1.png"
+                alt="Kainetic Logo"
+                width={32}
+                height={32}
+                className="w-full h-full object-contain"
+              />
             </div>
             <div className="hidden sm:block">
               <h1 className="text-xl font-bold tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-lime-400 to-teal-300 leading-none font-amarante uppercase">
@@ -109,9 +118,10 @@ export default function DashboardPage() {
             <div className="w-9 h-9 rounded-full bg-slate-800 overflow-hidden border-2 border-[#1c2229] shadow-sm cursor-pointer hover:ring-2 ring-blue-500 transition-all">
               <Image
                 src={
-                  isDemo
+                  profile?.profile_medium ||
+                  (isDemo
                     ? "https://images.unsplash.com/photo-1511367461989-f85a21fda167?auto=format&fit=crop&w=100&q=80"
-                    : "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=100&q=80"
+                    : "https://www.strava.com/api/v3/athlete/avatar")
                 }
                 alt="User"
                 width={36}
@@ -123,7 +133,6 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      {/* --- MAIN LAYOUT --- */}
       <div className="flex justify-center gap-4 px-4 pt-8">
         {/* --- LEFT SIDEBAR --- */}
         <aside className="hidden 2xl:block w-[275px] sticky top-24 h-fit shrink-0">
@@ -145,11 +154,7 @@ export default function DashboardPage() {
             <ShoppingBag size={14} />
           </div>
           {gearRecommendationsLeft.slice(0, 2).map((product) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              compact={true}
-            />
+            <ProductCard key={product.id} product={product} compact={true} />
           ))}
           <AffiliateDisclosure />
         </aside>
@@ -193,10 +198,12 @@ export default function DashboardPage() {
                 </section>
 
                 <section id="stats">
-                  <StatsGrid sport={activeTab} fetcher={service.getStats} />
+                  {activeTab !== "walking" && (
+                    <StatsGrid sport={activeTab} fetcher={service.getStats} />
+                  )}
                 </section>
 
-                {/* Mobile Products Injection */}
+                {/* Mobile Products Injection - Middle */}
                 <div className="block xl:hidden mb-8">
                   <div className="flex items-center justify-between mb-4 px-1">
                     <div className="flex items-center gap-2 text-[#ee4d2d] opacity-90">
@@ -215,6 +222,7 @@ export default function DashboardPage() {
                       />
                     ))}
                   </div>
+                  <AffiliateDisclosure />
                 </div>
 
                 <section id="charts">
@@ -225,18 +233,30 @@ export default function DashboardPage() {
                 </section>
 
                 <section id="story">
-                  <WeeklyStory
-                    sport={activeTab}
-                    fetcher={service.getWeeklyStory}
-                  />
+                  <WeeklyStory sport={activeTab} fetcher={service.getStory} />
                 </section>
 
-                <section id="trophies">
-                  <TrophiesGrid
-                    sport={activeTab}
-                    fetcher={service.getTrophies}
-                  />
-                </section>
+                {/* Mobile Products Injection - Bottom */}
+                <div className="block xl:hidden mt-8">
+                  <div className="flex items-center justify-between mb-4 px-1">
+                    <div className="flex items-center gap-2 text-[#ee4d2d] opacity-90">
+                      <ShoppingBag size={14} />
+                      <span className="text-xs uppercase font-bold tracking-widest">
+                        More Gear
+                      </span>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    {gearRecommendationsLeft.slice(0, 2).map((product) => (
+                      <ProductCard
+                        key={product.id}
+                        product={product}
+                        compact={true}
+                      />
+                    ))}
+                  </div>
+                  <AffiliateDisclosure />
+                </div>
               </motion.div>
             </AnimatePresence>
           </div>

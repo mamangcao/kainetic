@@ -8,7 +8,7 @@ interface GoalCardProps {
   title: string;
   current: number;
   target: number;
-  icon: any;
+  icon: React.ElementType;
   onEdit: () => void;
 }
 

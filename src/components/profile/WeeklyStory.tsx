@@ -1,21 +1,22 @@
 "use client";
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { Sparkles, Zap, Mountain, Wind, TrendingUp, Heart, Trophy, CloudRain, Gauge } from 'lucide-react';
+import { Sparkles, Zap, Mountain, Wind, TrendingUp, Heart, Trophy, CloudRain, Gauge, Clock, Coffee, Footprints, Map } from 'lucide-react';
 import { Card } from '../ui/ui-primitives';
 import { SportType, WeeklyStoryData } from '../../types';
 
 interface WeeklyStoryProps {
   sport: SportType;
-  fetcher: (sport: SportType) => Promise<WeeklyStoryData>;
+  fetcher: (sport: SportType, period: 'week' | 'month') => Promise<WeeklyStoryData>;
 }
 
 const WeeklyStory: React.FC<WeeklyStoryProps> = ({ sport, fetcher }) => {
   const [data, setData] = useState<WeeklyStoryData | null>(null);
+  const [period, setPeriod] = useState<'week' | 'month'>('week');
 
   useEffect(() => {
-    fetcher(sport).then(setData);
-  }, [sport, fetcher]);
+    fetcher(sport, period).then(setData);
+  }, [sport, period, fetcher]);
 
   if (!data) return null;
 
@@ -28,6 +29,10 @@ const WeeklyStory: React.FC<WeeklyStoryProps> = ({ sport, fetcher }) => {
       case 'heart': return <Heart size={18} />;
       case 'cloud-rain': return <CloudRain size={18} />;
       case 'gauge': return <Gauge size={18} />;
+      case 'clock': return <Clock size={18} />;
+      case 'coffee': return <Coffee size={18} />;
+      case 'footprints': return <Footprints size={18} />;
+      case 'map': return <Map size={18} />;
       default: return <Trophy size={18} />;
     }
   };
@@ -41,21 +46,48 @@ const WeeklyStory: React.FC<WeeklyStoryProps> = ({ sport, fetcher }) => {
     >
       <Card className="relative overflow-hidden border border-purple-500/20 bg-gradient-to-br from-[#1c2229] via-[#1c2229] to-[#2e106520] p-6">
         
-        {/* Header with Sparkles */}
-        <div className="flex items-center gap-2 mb-4">
-          <div className="p-2 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg text-white shadow-lg shadow-purple-500/20">
-            <Sparkles size={16} fill="currentColor" />
+        {/* Header with Sparkles and Toggle */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-2">
+            <div className="p-2 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg text-white shadow-lg shadow-purple-500/20">
+              <Sparkles size={16} fill="currentColor" />
+            </div>
+            <h3 className="text-lg font-bold text-white tracking-tight">
+              {period === 'week' ? 'Weekly' : 'Monthly'} Recap
+            </h3>
+            <span className="text-[10px] uppercase font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20 ml-2">
+              AI Generated
+            </span>
           </div>
-          <h3 className="text-lg font-bold text-white tracking-tight">Weekly Recap</h3>
-          <span className="text-[10px] uppercase font-bold text-purple-400 bg-purple-500/10 px-2 py-0.5 rounded border border-purple-500/20 ml-2">
-            AI Generated
-          </span>
+
+          <div className="flex p-1 bg-white/5 rounded-lg border border-white/5">
+            <button
+              onClick={() => setPeriod('week')}
+              className={`px-3 py-1 text-xs font-bold rounded-md transition-colors cursor-pointer ${
+                period === 'week' 
+                  ? 'bg-purple-500 text-white shadow-sm' 
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              This Week
+            </button>
+            <button
+              onClick={() => setPeriod('month')}
+              className={`px-3 py-1 text-xs font-bold rounded-md transition-colors cursor-pointer ${
+                period === 'month' 
+                  ? 'bg-purple-500 text-white shadow-sm' 
+                  : 'text-slate-400 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              This Month
+            </button>
+          </div>
         </div>
 
         {/* AI Summary Text */}
         <div className="mb-8 relative z-10">
           <p className="text-slate-300 text-sm md:text-base leading-relaxed italic font-light border-l-2 border-purple-500/50 pl-4 py-1">
-            "{data.summary}"
+            &quot;{data.summary}&quot;
           </p>
         </div>
 

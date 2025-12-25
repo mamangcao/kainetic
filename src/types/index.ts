@@ -32,10 +32,10 @@ export interface StatsData {
   };
   ytd: StatMetrics & {
     trends: {
-      activities: number;
-      distance: number;
-      time: number;
-      elevation: number;
+      activities?: number;
+      distance?: number;
+      time?: number;
+      elevation?: number;
       steps?: number;
     };
   };
@@ -88,6 +88,12 @@ export interface ChartPoint {
   steps?: number;
 }
 
+export interface HeatmapPoint {
+  date: string;
+  distance: number;
+  intensity: number;
+}
+
 export interface AthleteProfile {
   id: string;
   username: string;
@@ -95,6 +101,20 @@ export interface AthleteProfile {
   lastname: string;
   bio: string;
   profile_medium: string;
-  city: string;
-  country: string;
+  city: string | null;
+  country: string | null;
+}
+
+export interface Product {
+  id: number;
+  name: string;
+  price: string;
+  image: string;
+  tag: string;
+  url?: string;
+  rating?: number;
+  sold?: number;
+  stock?: number;
+  productId?: string;
+  fetchedAt?: string;
 }

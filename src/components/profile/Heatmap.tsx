@@ -1,20 +1,40 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import { Card } from '../ui/ui-primitives';
-import { SportType } from '../../types';
+import { SportType, HeatmapPoint } from '../../types';
 
 interface HeatmapProps {  
   sport: SportType;
-  fetcher: (sport: SportType) => Promise<number[]>;
+  fetcher: (sport: SportType) => Promise<HeatmapPoint[]>;
 }
 
 const Heatmap: React.FC<HeatmapProps> = ({ sport, fetcher }) => {
-  const [data, setData] = useState<number[]>([]);
+  const [data, setData] = useState<HeatmapPoint[]>([]);
+  
+  // Derived state pattern to reset loading on sport change
+  const [prevSport, setPrevSport] = useState(sport);
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
+  if (sport !== prevSport) {
+    setPrevSport(sport);
     setLoading(true);
+  }
+
+  const months = useMemo(() => {
+    // Generate last 12 months dynamically
+    const date = new Date();
+    date.setDate(1);
+    const m = [];
+    for (let i = 12; i >= 0; i--) {
+      const d = new Date(date);
+      d.setMonth(date.getMonth() - i);
+      m.push(d.toLocaleString('default', { month: 'short' }));
+    }
+    return m;
+  }, []);
+
+  useEffect(() => {
     fetcher(sport).then(d => {
       setData(d);
       setLoading(false);
@@ -32,16 +52,6 @@ const Heatmap: React.FC<HeatmapProps> = ({ sport, fetcher }) => {
     }
   };
 
-  const getWeeks = (flatData: number[]) => {
-    const weeks = [];
-    for (let i = 0; i < flatData.length; i += 7) {
-      weeks.push(flatData.slice(i, i + 7));
-    }
-    return weeks;
-  };
-
-  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-
   const renderMonthLabels = () => {
     return (
       <div className="flex text-[10px] text-slate-500 font-medium mb-2 px-1 justify-between">
@@ -50,6 +60,11 @@ const Heatmap: React.FC<HeatmapProps> = ({ sport, fetcher }) => {
          ))}
       </div>
     );
+  };
+
+  const formatDate = (dateStr: string) => {
+    const date = new Date(dateStr);
+    return date.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' });
   };
 
   return (
@@ -79,14 +94,14 @@ const Heatmap: React.FC<HeatmapProps> = ({ sport, fetcher }) => {
                initial={{ opacity: 0 }}
                animate={{ opacity: 1 }}
                transition={{ duration: 0.5 }}
-               className="grid grid-rows-7 grid-flow-col gap-[4px]"
+               className="grid grid-rows-8 grid-flow-col gap-[4px]"
              >
-               {data.map((intensity, i) => (
+               {data.map((point, i) => (
                  <motion.div
                    key={i}
                    whileHover={{ scale: 1.4, zIndex: 10, borderRadius: '4px' }}
-                   className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-[2px] ${getColor(intensity)} transition-all duration-300 ${intensity === 0 ? 'border border-white/5' : ''}`}
-                   title={`Day ${i + 1}: Level ${intensity}`}
+                   className={`w-3 h-3 md:w-3.5 md:h-3.5 rounded-[2px] ${getColor(point.intensity)} transition-all duration-300 ${point.intensity === 0 ? 'border border-white/5' : ''}`}
+                   title={`${formatDate(point.date)}: ${(point.distance / 1000).toFixed(1)} km`}
                  />
                ))}
              </motion.div>

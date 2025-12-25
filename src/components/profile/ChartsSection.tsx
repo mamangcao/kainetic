@@ -12,7 +12,7 @@ interface ChartsSectionProps {
 }
 
 // Separate component for the tooltip content to handle props cleaner
-const CustomTooltipContent = ({ active, payload, label, sport }: { active?: boolean, payload?: any[], label?: string, sport: SportType }) => {
+const CustomTooltipContent = ({ active, payload, label, sport }: { active?: boolean, payload?: { payload: ChartPoint }[], label?: string, sport: SportType }) => {
   if (active && payload && payload.length) {
     const data = payload[0].payload as ChartPoint;
     const activityType = sport === 'cycling' ? 'Rides' : (sport === 'walking' ? 'Walks' : 'Runs');
@@ -78,7 +78,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ sport, fetcher }) => {
   }, [sport, period, fetcher]);
 
   return (
-    <Card className="mb-8 p-6">
+    <Card className="mb-8 p-3 lg:p-6">
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-bold text-white tracking-tight">Momentum</h3>
         <select 
@@ -92,7 +92,7 @@ const ChartsSection: React.FC<ChartsSectionProps> = ({ sport, fetcher }) => {
       </div>
 
       <div className="h-[300px] w-full">
-        <ResponsiveContainer width="100%" height="100%">
+        <ResponsiveContainer width="100%" height="100%" minWidth={0}>
           <AreaChart data={data} margin={{ top: 10, right: 0, left: -20, bottom: 0 }}>
             <defs>
               <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">

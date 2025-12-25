@@ -7,7 +7,7 @@ import { ActivityHighlight } from '../../types';
 interface HighlightsCardProps {
   title: string;
   items: ActivityHighlight[];
-  icon: any;
+  icon: React.ElementType;
 }
 
 const HighlightsCard: React.FC<HighlightsCardProps> = ({ title, items, icon: Icon }) => {

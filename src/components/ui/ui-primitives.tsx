@@ -2,7 +2,8 @@
 import React from 'react';
 
 // --- Card ---
-// Updated to "Soft Card" in Dark Mode: #1c2229 with subtle border
+// Uses a specific dark background (#1c2229) and subtle border to ensure
+// visual hierarchy and separation from the main background in Dark Mode.
 export const Card = ({ children, className = '' }: { children?: React.ReactNode; className?: string }) => (
   <div className={`bg-[#1c2229] rounded-2xl shadow-xl border border-white/5 ${className}`}>
     {children}
@@ -20,7 +21,7 @@ export const Button = ({ onClick, children, className = '', variant = 'primary' 
   const variants = {
     // Electric Bolt (Blue)
     primary: "bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20 hover:shadow-blue-600/30",
-    // Official Strava Orange (Mandatory for Connect button) - Kept for compliance
+    // Uses official Strava Orange (#fc4c02) as required by Strava Brand Guidelines for the Connect button.
     strava: "bg-[#fc4c02] text-white hover:bg-[#e34402] shadow-md shadow-orange-900/20",
     outline: "border border-slate-700 text-slate-300 hover:bg-white/5 hover:border-slate-500",
     ghost: "bg-transparent text-slate-400 hover:text-white hover:bg-white/5"

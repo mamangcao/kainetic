@@ -38,7 +38,7 @@ export default function LoginPage() {
     if (type === "demo") {
       router.push("/dashboard?mode=demo");
     } else {
-      // Redirect to your Next.js API route that handles Strava OAuth
+      // Redirect to Next.js API route that handles Strava OAuth
       router.push("/api/strava/auth");
     }
   };
@@ -227,16 +227,16 @@ export default function LoginPage() {
                 <div className="flex items-center gap-1.5 mt-1 text-slate-500">
                   <span>Developed by</span>
                   <a
-                    href="https://github.com/AbdulHaleemMamangcao"
-                    target="_blank"
+                    // href="https://mamangcao.vercel.app"
+                    // target="_blank"
                     rel="noopener noreferrer"
                     className="font-semibold text-slate-700 hover:text-blue-600 transition-colors border-b border-transparent hover:border-blue-600"
                   >
                     Abdul Haleem Mamangcao
                   </a>
                   <a
-                    href="https://github.com/AbdulHaleemMamangcao"
-                    target="_blank"
+                    // href="https://github.com/mamangcao"
+                    // target="_blank"
                     rel="noopener noreferrer"
                     className="text-slate-400 hover:text-slate-900 transition-colors"
                   >
