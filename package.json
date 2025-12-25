@@ -10,12 +10,10 @@
   },
   "dependencies": {
     "cheerio": "^1.1.2",
-    "chrome-aws-lambda": "^10.1.0",
     "framer-motion": "^12.23.26",
     "html2canvas": "^1.4.1",
     "lucide-react": "^0.561.0",
     "next": "16.0.10",
-    "puppeteer-core": "^24.34.0",
     "react": "19.2.1",
     "react-dom": "19.2.1",
     "recharts": "^3.6.0"
