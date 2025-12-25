@@ -28,6 +28,7 @@ const Footer: React.FC<FooterProps> = ({ variant = 'fixed', theme = 'dark', clas
                  src="/logo/strava-white.png" 
                  alt="Powered by Strava" 
                  fill
+                 sizes="128px"
                  className="object-contain"
                />
              </div>
