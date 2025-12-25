@@ -79,20 +79,20 @@ const StatCell: React.FC<StatCellProps> = ({
 
 const StatsGrid: React.FC<StatsGridProps> = ({ sport, fetcher }) => {
   const [stats, setStats] = useState<StatsData | null>(null);
-  const [goals, setGoals] = useState({ weekly: 0, monthly: 0 });
-  const [editing, setEditing] = useState<{ type: 'weekly' | 'monthly', title: string } | null>(null);
-  const [prevSport, setPrevSport] = useState(sport);
+  
+  const getDefaultGoals = (s: SportType) => ({
+    weekly: s === 'cycling' ? 75 : (s === 'walking' ? 15 : 25),
+    monthly: s === 'cycling' ? 300 : (s === 'walking' ? 50 : 100)
+  });
 
-  if (sport !== prevSport) {
-    setPrevSport(sport);
-    setStats(null);
-    const defaultWeeklyGoal = sport === 'cycling' ? 150 : (sport === 'walking' ? 15 : 25);
-    const defaultMonthlyGoal = sport === 'cycling' ? 600 : (sport === 'walking' ? 50 : 100);
-    setGoals({ weekly: defaultWeeklyGoal, monthly: defaultMonthlyGoal });
-  }
+  const [goals, setGoals] = useState(getDefaultGoals(sport));
+  const [editing, setEditing] = useState<{ type: 'weekly' | 'monthly', title: string } | null>(null);
 
   useEffect(() => {
     fetcher(sport).then(setStats);
+    const defaultGoals = getDefaultGoals(sport);
+    // Defer state update to avoid calling setState synchronously within the effect
+    Promise.resolve().then(() => setGoals(defaultGoals));
   }, [sport, fetcher]);
 
   const handleSaveGoal = (val: number) => {
