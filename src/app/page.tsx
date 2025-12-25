@@ -73,7 +73,7 @@ export default function LoginPage() {
               {/* Logo */}
               <div className="relative w-28 h-28 md:w-36 md:h-36 lg:w-40 lg:h-40">
                 <Image
-                  src="/logo/kainetic-logo-v1.png"
+                  src="/logo/Kainetic-logo-v1.png"
                   alt="Kainetic Logo"
                   fill
                   className="object-contain"

@@ -70,7 +70,7 @@ function DashboardContent() {
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 flex items-center justify-center -skew-x-12">
               <Image
-                src="/logo/kainetic-logo-v1.png"
+                src="/logo/Kainetic-logo-v1.png"
                 alt="Kainetic Logo"
                 width={32}
                 height={32}
